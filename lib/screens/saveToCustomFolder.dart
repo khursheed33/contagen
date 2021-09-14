@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:screenshot/screenshot.dart';
 
 class SaveFileToCustomFolder extends StatefulWidget {
   const SaveFileToCustomFolder({Key? key}) : super(key: key);
@@ -28,7 +31,7 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
     }
   }
 
-  Future<String> createFolder() async {
+  Future<String> saveImageToCustomFolder() async {
     setState(() {
       _isSaving = true;
     });
@@ -46,7 +49,11 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
     if ((await path.exists())) {
       _savePath = path.path;
       final String _fileName = DateTime.now().toIso8601String();
-      await _imageFile!.copy('$_savePath/$_fileName.png');
+      // await _imageFile!.copy('$_savePath/$_fileName.png');
+      _screenshotController.captureAndSave(
+        _savePath!, //set path where screenshot will be saved
+        fileName: _fileName + '.png',
+      );
       setState(() {
         _isSaving = false;
       });
@@ -55,7 +62,12 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
       path.create();
       _savePath = path.path;
       final String _fileName = DateTime.now().toIso8601String();
-      await _imageFile!.copy('$_savePath/$_fileName.png');
+      // await _imageFile!.copy('$_savePath/$_fileName.png');
+
+      _screenshotController.captureAndSave(
+        _savePath!, //set path where screenshot will be saved
+        fileName: _fileName + '.png',
+      );
       setState(() {
         _isSaving = false;
       });
@@ -63,12 +75,8 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
     }
   }
 
-  Future<void> saveImageToCustomFolder() async {
-    createFolder().then((value) async {
-      print("Folder Created:File Saved Scuccessfully:$_savePath");
-    });
-  }
-
+  final _screenshotController = ScreenshotController();
+  // File? _capturedImage;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,17 +91,21 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                height: 200,
-                width: 200,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  image: _imageFile == null
-                      ? null
-                      : DecorationImage(
-                          image: FileImage(_imageFile!),
-                          fit: BoxFit.cover,
-                        ),
+              Screenshot(
+                controller: _screenshotController,
+                child: Container(
+                  height: 200,
+                  width: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: Colors.grey,
+                    image: _imageFile == null
+                        ? null
+                        : DecorationImage(
+                            image: FileImage(_imageFile!),
+                            fit: BoxFit.cover,
+                          ),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
@@ -106,9 +118,29 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
                       child: Text("Pick an Image"),
                     ),
               ElevatedButton(
-                onPressed: saveImageToCustomFolder,
+                onPressed: () async {
+                  saveImageToCustomFolder();
+                  // await _screenshotController
+                  //     .capture()
+                  //     .then((Uint8List? imageByte) {
+                  // if (imageByte != null) {
+                  // Save the File
+
+                  // }
+
+                  // });
+                },
                 child: Text("Save Image"),
               ),
+              SizedBox(height: 20),
+              // if (_capturedImage != null)
+              //   Container(
+              //     height: 300,
+              //     width: 300,
+              //     color: Colors.red,
+              //     padding: const EdgeInsets.all(10),
+              //     child: Image.asset(_capturedImage!.path),
+              //   ),
             ],
           ),
         ),
