@@ -1,9 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -25,6 +23,7 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
     );
 
     if (_pickedFile != null) {
+      print("IMAGE::${_pickedFile.path}");
       setState(() {
         _imageFile = File(_pickedFile.path);
       });
@@ -35,7 +34,7 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
     setState(() {
       _isSaving = true;
     });
-    const folderName = "AadhaarImage";
+    const folderName = "Filter Images";
     final Directory path = Directory("storage/emulated/0/$folderName");
     final PermissionStatus status = await Permission.storage.status;
     final PermissionStatus extStorage =
@@ -109,29 +108,29 @@ class _SaveFileToCustomFolderState extends State<SaveFileToCustomFolder> {
                 ),
               ),
               SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: pickImage,
+                child: Text("Pick an Image"),
+              ),
               _isSaving
                   ? Center(
                       child: CircularProgressIndicator.adaptive(),
                     )
                   : ElevatedButton(
-                      onPressed: pickImage,
-                      child: Text("Pick an Image"),
+                      onPressed: () async {
+                        saveImageToCustomFolder();
+                        // await _screenshotController
+                        //     .capture()
+                        //     .then((Uint8List? imageByte) {
+                        // if (imageByte != null) {
+                        // Save the File
+
+                        // }
+
+                        // });
+                      },
+                      child: Text("Save Image"),
                     ),
-              ElevatedButton(
-                onPressed: () async {
-                  saveImageToCustomFolder();
-                  // await _screenshotController
-                  //     .capture()
-                  //     .then((Uint8List? imageByte) {
-                  // if (imageByte != null) {
-                  // Save the File
-
-                  // }
-
-                  // });
-                },
-                child: Text("Save Image"),
-              ),
               SizedBox(height: 20),
               // if (_capturedImage != null)
               //   Container(

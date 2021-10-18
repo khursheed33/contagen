@@ -1,5 +1,5 @@
 import 'package:contagen/providers/courseProvider.dart';
-import 'package:contagen/screens/saveToCustomFolder.dart';
+import 'package:contagen/screens/filter_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
             create: (ctx) => CourseProvider(),
           ),
         ],
-        child: SaveFileToCustomFolder(),
+        child: FilterImages(),
       ),
     );
   }
